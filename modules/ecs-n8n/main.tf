@@ -115,4 +115,13 @@ resource "aws_ecs_service" "n8n" {
         security_groups  = [var.security_group_id]
         assign_public_ip = false
     }
+
+    load_balancer {
+        target_group_arn = var.target_group_arn
+        container_name   = "n8n"
+        container_port   = 5678
+    }
+
+    health_check_grace_period_seconds = 180
+
 }

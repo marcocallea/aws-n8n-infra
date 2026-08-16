@@ -43,3 +43,10 @@ variable "memory"{
     type = number
 } 
 
+variable "target_group_arn"{
+    description = "target group arn"
+    type = string
+} 
+
+
+

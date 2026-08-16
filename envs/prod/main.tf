@@ -31,4 +31,14 @@ module "ecs-n8n" {
     db_password_ssm_arn = module.rds.db_password_ssm_arn
     cpu                 = 512
     memory              = 1024
+    target_group_arn = module.alb.target_group_arn 
+    depends_on = [module.alb]
+}
+
+module "alb" {
+    source            = "../../modules/alb"
+    project_name      = "aws-n8n-infra"
+    vpc_id            = module.network.vpc_id
+    public_subnet_ids = module.network.public_subnet_ids
+    security_group_id = module.security.alb_sg_id
 }
