@@ -21,19 +21,19 @@ module "rds" {
 }
 
 module "ecs-n8n" {
-    source              = "../../modules/ecs-n8n"
-    project_name        = "aws-n8n-infra"
-    private_subnet_ids  = module.network.private_subnet_ids
-    security_group_id   = module.security.ecs_sg_id
-    db_endpoint         = module.rds.db_endpoint
-    db_name             = module.rds.db_name
-    db_username         = module.rds.db_username
-    db_password_ssm_arn = module.rds.db_password_ssm_arn
-    cpu                 = 512
-    memory              = 1024
-    target_group_arn = module.alb.target_group_arn 
-    depends_on = [module.alb]
-    public_url = "https://${module.cloudfront.cloudfront_domain_name}"
+  source              = "../../modules/ecs-n8n"
+  project_name        = "aws-n8n-infra"
+  private_subnet_ids  = module.network.private_subnet_ids
+  security_group_id   = module.security.ecs_sg_id
+  db_endpoint         = module.rds.db_endpoint
+  db_name             = module.rds.db_name
+  db_username         = module.rds.db_username
+  db_password_ssm_arn = module.rds.db_password_ssm_arn
+  cpu                 = 512
+  memory              = 1024
+  target_group_arn    = module.alb.target_group_arn
+  depends_on          = [module.alb]
+  public_url          = "https://${module.cloudfront.cloudfront_domain_name}"
 }
 
 module "alb" {
