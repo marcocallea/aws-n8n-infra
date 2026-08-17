@@ -1,15 +1,15 @@
 output "db_endpoint" {
-    value = aws_db_instance.main.address
+  value = aws_db_instance.main.address
 }
 
 output "db_name" {
-    value = aws_db_instance.main.db_name
+  value = aws_db_instance.main.db_name
 }
 
 output "db_username" {
-    value = aws_db_instance.main.username
+  value = aws_db_instance.main.username
 }
 
 output "db_password_ssm_arn" {
-    value = aws_ssm_parameter.db_password.arn
+  value = aws_ssm_parameter.db_password.arn
 }
