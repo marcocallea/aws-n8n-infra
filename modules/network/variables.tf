@@ -8,7 +8,3 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "az_count" {
-  description = "Counter AZ"
-  type        = number
-}
