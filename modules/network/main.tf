@@ -1,5 +1,7 @@
 resource "aws_vpc" "main" {
 
+    # checkov:skip=CKV2_AWS_11:VPC flow logs non abilitati per costo di storage; in roadmap v2 (rilevanti per detection)
+
     cidr_block = var.vpc_cidr
 
     enable_dns_hostnames = true
@@ -20,7 +22,7 @@ resource "aws_subnet" "public_a" {
     cidr_block = "10.0.0.0/24"
     availability_zone = data.aws_availability_zones.available.names[0]
 
-    map_public_ip_on_launch = true
+    map_public_ip_on_launch = false
 
 
     tags = {
@@ -33,7 +35,7 @@ resource "aws_subnet" "public_b" {
     cidr_block = "10.0.1.0/24"
     availability_zone = data.aws_availability_zones.available.names[1]
 
-    map_public_ip_on_launch = true
+    map_public_ip_on_launch = false
 
 
     tags = {
@@ -135,4 +137,9 @@ resource "aws_route_table_association" "private_a" {
 resource "aws_route_table_association" "private_b" {
     subnet_id      = aws_subnet.private_b.id
     route_table_id = aws_route_table.private.id
+}
+
+resource "aws_default_security_group" "default" {
+    vpc_id = aws_vpc.main.id
+    # nessuna regola: tutto negato
 }

@@ -1,4 +1,7 @@
 resource "aws_ecs_cluster" "ecs_cluster" {
+
+    # checkov:skip=CKV_AWS_65:Container Insights ha un costo per metrica; log applicativi su CloudWatch sufficienti in demo
+
     name = "${var.project_name}-ecs-cluster"
 
     tags = {
@@ -7,6 +10,10 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 }
 
 resource "aws_cloudwatch_log_group" "n8n"{
+
+    # checkov:skip=CKV_AWS_338:retention 7 giorni scelta di costo per ambiente demo
+    # checkov:skip=CKV_AWS_158:log cifrati con chiave gestita da AWS; una CMK dedicata avrebbe costo ricorrente
+
     name = "/ecs/${var.project_name}"
     retention_in_days = 7
 }
@@ -17,6 +24,9 @@ resource "random_password" "n8n_key" {
 }
 
 resource "aws_ssm_parameter" "n8n_encryption_key" {
+
+    # checkov:skip=CKV_AWS_337:SecureString con chiave gestita da AWS; CMK dedicata ~1$/mese non giustificata in demo
+
     name = "/n8n/encryption-key"
     type = "SecureString"
     value = random_password.n8n_key.result
@@ -58,6 +68,9 @@ resource "aws_iam_role_policy" "execution_ssm" {
 }
 
 resource "aws_ecs_task_definition" "n8n" {
+
+    # checkov:skip=CKV_AWS_336:n8n scrive dati applicativi in /home/node/.n8n; filesystem read-only romperebbe il container
+
     family                   = "${var.project_name}-n8n"
     requires_compatibilities = ["FARGATE"]
     network_mode             = "awsvpc"
@@ -81,9 +94,13 @@ resource "aws_ecs_task_definition" "n8n" {
             { name = "DB_POSTGRESDB_DATABASE", value = var.db_name },
             { name = "DB_POSTGRESDB_USER",   value = var.db_username },
             { name = "GENERIC_TIMEZONE",     value = "Europe/Rome" },
-            { name = "N8N_SECURE_COOKIE",    value = "false" },
             { name = "DB_POSTGRESDB_SSL_ENABLED", value = "true" },
-            { name = "DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED", value = "false" }
+            { name = "DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED", value = "false" },
+            { name = "N8N_HOST",     value = replace(replace(var.public_url, "https://", ""), "/", "") },
+            { name = "N8N_PROTOCOL", value = "https" },
+            { name = "WEBHOOK_URL",  value = var.public_url },
+            { name = "N8N_PROXY_HOPS", value = "1" },
+            { name = "N8N_SECURE_COOKIE", value = "true" }
         ]
 
         secrets = [

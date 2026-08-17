@@ -33,6 +33,7 @@ module "ecs-n8n" {
     memory              = 1024
     target_group_arn = module.alb.target_group_arn 
     depends_on = [module.alb]
+    public_url = "https://${module.cloudfront.cloudfront_domain_name}"
 }
 
 module "alb" {

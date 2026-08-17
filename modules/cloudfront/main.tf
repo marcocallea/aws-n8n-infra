@@ -7,6 +7,16 @@ data "aws_cloudfront_origin_request_policy" "all_viewer" {
 }
 
 resource "aws_cloudfront_distribution" "main" {
+
+    # checkov:skip=CKV_AWS_86:access log richiedono bucket S3 dedicato, costo>beneficio in ambiente demo
+    # checkov:skip=CKV_AWS_174:il certificato di default CloudFront non consente di impostare la minimum protocol version; servirebbe un certificato ACM custom (quindi un dominio)
+    # checkov:skip=CKV2_AWS_42:certificato di default per assenza di dominio dedicato; scelta documentata nel README
+    # checkov:skip=CKV_AWS_68:WAF fuori scope per costo; in roadmap v2
+    # checkov:skip=CKV2_AWS_47:vedi CKV_AWS_68, nessun WAF associato
+    # checkov:skip=CKV_AWS_310:origine singola per scelta architetturale; il failover richiederebbe un secondo ALB
+    # checkov:skip=CKV_AWS_305:n8n e' un'applicazione dinamica, non un sito statico con documento radice
+    # checkov:skip=CKV_AWS_374:nessuna restrizione geografica: accesso previsto da qualsiasi paese
+
     enabled = true
     comment = "${var.project_name} - n8n"
 
@@ -30,6 +40,7 @@ resource "aws_cloudfront_distribution" "main" {
 
         cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
         origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
+        response_headers_policy_id = data.aws_cloudfront_response_headers_policy.security.id
     }
 
     restrictions {
@@ -41,4 +52,10 @@ resource "aws_cloudfront_distribution" "main" {
     viewer_certificate {
         cloudfront_default_certificate = true
     }
+
+    
+}
+
+data "aws_cloudfront_response_headers_policy" "security" {
+    name = "Managed-SecurityHeadersPolicy"
 }

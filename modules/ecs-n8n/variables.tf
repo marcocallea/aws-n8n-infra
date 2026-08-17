@@ -49,4 +49,7 @@ variable "target_group_arn"{
 } 
 
 
-
+variable "public_url" {
+    description = "URL n8n (CloudFront)"
+    type = string
+}
