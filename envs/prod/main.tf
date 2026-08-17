@@ -42,3 +42,10 @@ module "alb" {
     public_subnet_ids = module.network.public_subnet_ids
     security_group_id = module.security.alb_sg_id
 }
+
+module "cloudfront" {
+    source            = "../../modules/cloudfront"
+    project_name      = "aws-n8n-infra"
+    alb_dns_name = module.alb.alb_dns_name
+
+}
